@@ -1,0 +1,1049 @@
+{
+  "furnace_recipes": [
+    {
+      "output": "iron_plate",
+      "count": 1,
+      "time": 3.2,
+      "inputs": {
+        "iron_ore": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "copper_plate",
+      "count": 1,
+      "time": 3.2,
+      "inputs": {
+        "copper_ore": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "steel",
+      "count": 1,
+      "time": 16,
+      "inputs": {
+        "iron_plate": 5
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "stone_brick",
+      "count": 1,
+      "time": 3.2,
+      "inputs": {
+        "stone": 2
+      },
+      "supports_production_modules": true
+    }
+  ],
+  "oil_refinery_recipes": [
+    {
+      "name": "oil_processing",
+      "inputs": {
+        "crude_oil": 100
+      },
+      "time": 5,
+      "outputs": {
+        "petroleum_gas": 45
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "advanced_oil_processing",
+      "inputs": {
+        "crude_oil": 100,
+        "water": 50
+      },
+      "time": 5,
+      "outputs": {
+        "heavy_oil": 25,
+        "light_oil": 45,
+        "petroleum_gas": 55
+      },
+      "supports_production_modules": true
+    }
+  ],
+  "chemical_plant_recipes": [
+    {
+      "name": "sulfuric_acid",
+      "output": "sulfuric_acid",
+      "count": 50,
+      "time": 1,
+      "inputs": {
+        "iron_plate": 1,
+        "sulfur": 5,
+        "water": 100
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "heavy_oil_cracking",
+      "output": "light_oil",
+      "count": 30,
+      "time": 2,
+      "inputs": {
+        "water": 30,
+        "heavy_oil": 40
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "light_oil_cracking",
+      "output": "petroleum_gas",
+      "count": 20,
+      "time": 2,
+      "inputs": {
+        "water": 30,
+        "light_oil": 30
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "lubricant",
+      "output": "lubricant",
+      "count": 10,
+      "time": 1,
+      "inputs": {
+        "heavy_oil": 10
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "plastic",
+      "output": "plastic",
+      "count": 2,
+      "time": 1,
+      "inputs": {
+        "petroleum_gas": 20,
+        "coal": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "sulfur",
+      "output": "sulfur",
+      "count": 2,
+      "time": 1,
+      "inputs": {
+        "water": 30,
+        "petroleum_gas": 30
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "battery",
+      "output": "battery",
+      "count": 1,
+      "time": 4,
+      "inputs": {
+        "sulfuric_acid": 20,
+        "iron_plate": 1,
+        "copper_plate": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "explosives",
+      "output": "explosives",
+      "count": 2,
+      "time": 4,
+      "inputs": {
+        "water": 10,
+        "coal": 1,
+        "sulfur": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "flamethrower_ammo",
+      "output": "flamethrower_ammo",
+      "count": 1,
+      "time": 6,
+      "inputs": {
+        "crude_oil": 100,
+        "steel": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "name": "solid_fuel_from_heavy_oil",
+      "output": "solid_fuel",
+      "count": 1,
+      "time": 2,
+      "inputs": {
+        "heavy_oil": 20
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "solid_fuel_from_light_oil",
+      "output": "solid_fuel",
+      "count": 1,
+      "time": 2,
+      "inputs": {
+        "light_oil": 10
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "solid_fuel_from_petroleum_gas",
+      "output": "solid_fuel",
+      "count": 1,
+      "time": 2,
+      "inputs": {
+        "petroleum_gas": 20
+      },
+      "supports_production_modules": true
+    }
+  ],
+  "crafter_recipes": [
+    {
+      "output": "gear",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "iron_plate": 2
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "iron_stick",
+      "count": 2,
+      "time": 0.5,
+      "inputs": {
+        "iron_plate": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "copper_wire",
+      "count": 2,
+      "time": 0.5,
+      "inputs": {
+        "copper_plate": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "circuit",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "copper_wire": 3,
+        "iron_plate": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "inserter",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "circuit": 1,
+        "gear": 1,
+        "iron_plate": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "belt",
+      "count": 2,
+      "time": 0.5,
+      "inputs": {
+        "gear": 1,
+        "iron_plate": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "ammo",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "iron_plate": 4
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "underground_belt",
+      "count": 2,
+      "time": 1,
+      "inputs": {
+        "belt": 5,
+        "iron_plate": 2
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "splitter",
+      "count": 1,
+      "time": 1,
+      "inputs": {
+        "circuit": 5,
+        "belt": 4,
+        "iron_plate": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "long_inserter",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "inserter": 1,
+        "gear": 1,
+        "iron_plate": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "medium_electric_pole",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "copper_wire": 2,
+        "iron_stick": 4,
+        "steel": 2
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "big_electric_pole",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "copper_wire": 4,
+        "iron_stick": 8,
+        "steel": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "auto_crafter_1",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "circuit": 3,
+        "gear": 5,
+        "iron_plate": 9
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "electric_drill",
+      "count": 1,
+      "time": 2,
+      "inputs": {
+        "circuit": 3,
+        "gear": 5,
+        "iron_plate": 10
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "wall",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "stone_brick": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "steel_furnace",
+      "count": 1,
+      "time": 3,
+      "inputs": {
+        "steel": 6,
+        "stone_brick": 10
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "auto_crafter_2",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "auto_crafter_1": 1,
+        "circuit": 3,
+        "gear": 5,
+        "steel": 2
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "gun_turret",
+      "count": 1,
+      "time": 8,
+      "inputs": {
+        "copper_plate": 10,
+        "gear": 10,
+        "iron_plate": 10
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "fast_inserter",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "iron_plate": 2,
+        "circuit": 2,
+        "inserter": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "red_belt",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "belt": 1,
+        "gear": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "lab",
+      "count": 1,
+      "time": 1,
+      "inputs": {
+        "belt": 4,
+        "gear": 10,
+        "circuit": 10
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "automation_science_pack",
+      "count": 1,
+      "time": 5,
+      "inputs": {
+        "copper_plate": 1,
+        "iron_plate": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "logistic_science_pack",
+      "count": 1,
+      "time": 6,
+      "inputs": {
+        "belt": 1,
+        "inserter": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "pipe",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "iron_plate": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "engine_unit",
+      "count": 1,
+      "time": 10,
+      "inputs": {
+        "gear": 1,
+        "pipe": 2,
+        "steel": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "steam_engine",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "gear": 8,
+        "pipe": 3,
+        "iron_plate": 10
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "offshore_pump",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "gear": 2,
+        "pipe": 3
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "pipe_to_ground",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "iron_plate": 5,
+        "pipe": 10
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "pump_jack",
+      "count": 1,
+      "time": 5,
+      "inputs": {
+        "steel": 5,
+        "gear": 10,
+        "circuit": 5,
+        "pipe": 10
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "chemical_plant",
+      "count": 1,
+      "time": 5,
+      "inputs": {
+        "steel": 5,
+        "gear": 5,
+        "circuit": 5,
+        "pipe": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "oil_refinery",
+      "count": 1,
+      "time": 8,
+      "inputs": {
+        "steel": 15,
+        "gear": 10,
+        "circuit": 10,
+        "pipe": 10,
+        "stone_brick": 10
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "gate",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "wall": 1,
+        "circuit": 2,
+        "steel": 2
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "slowdown_capsule",
+      "count": 1,
+      "time": 8,
+      "inputs": {
+        "coal": 5,
+        "steel": 2,
+        "circuit": 2
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "poison_capsule",
+      "count": 1,
+      "time": 8,
+      "inputs": {
+        "coal": 10,
+        "steel": 3,
+        "circuit": 3
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "grenade",
+      "count": 1,
+      "time": 8,
+      "inputs": {
+        "coal": 10,
+        "iron_plate": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "piercing_ammo",
+      "count": 1,
+      "time": 3,
+      "inputs": {
+        "copper_plate": 5,
+        "ammo": 1,
+        "steel": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "military_science_pack",
+      "count": 2,
+      "time": 10,
+      "inputs": {
+        "piercing_ammo": 1,
+        "grenade": 1,
+        "wall": 2
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "red_circuit",
+      "count": 1,
+      "time": 6,
+      "inputs": {
+        "plastic": 2,
+        "circuit": 2,
+        "copper_wire": 4
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "chemical_science_pack",
+      "count": 2,
+      "time": 24,
+      "inputs": {
+        "engine_unit": 2,
+        "red_circuit": 3,
+        "sulfur": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "cannon_shell",
+      "count": 1,
+      "time": 8,
+      "inputs": {
+        "steel": 2,
+        "plastic": 2,
+        "explosives": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "explosive_cannon_shell",
+      "count": 1,
+      "time": 8,
+      "inputs": {
+        "steel": 2,
+        "plastic": 2,
+        "explosives": 2
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "low_density_structure",
+      "count": 1,
+      "time": 15,
+      "inputs": {
+        "copper_plate": 20,
+        "steel": 2,
+        "plastic": 5
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "electric_furnace",
+      "count": 1,
+      "time": 5,
+      "inputs": {
+        "steel": 10,
+        "red_circuit": 5,
+        "stone_brick": 10
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "rocket",
+      "count": 1,
+      "time": 4,
+      "inputs": {
+        "iron_plate": 2,
+        "explosives": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "blue_circuit",
+      "count": 1,
+      "time": 10,
+      "inputs": {
+        "circuit": 20,
+        "red_circuit": 2,
+        "sulfuric_acid": 5
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "electric_engine_unit",
+      "count": 1,
+      "time": 10,
+      "inputs": {
+        "circuit": 2,
+        "engine_unit": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "flying_robot_frame",
+      "count": 1,
+      "time": 20,
+      "inputs": {
+        "steel": 1,
+        "battery": 2,
+        "circuit": 3,
+        "electric_engine_unit": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "logistic_robot",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "red_circuit": 2,
+        "flying_robot_frame": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "construction_robot",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "red_circuit": 2,
+        "flying_robot_frame": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "utility_science_pack",
+      "count": 3,
+      "time": 21,
+      "inputs": {
+        "blue_circuit": 2,
+        "flying_robot_frame": 1,
+        "low_density_structure": 3
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "roboport",
+      "count": 1,
+      "time": 5,
+      "inputs": {
+        "steel": 45,
+        "gear": 45,
+        "red_circuit": 3
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "repair_pack",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "gear": 2,
+        "circuit": 2
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "radar",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "iron_plate": 10,
+        "gear": 5,
+        "circuit": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "artillery_shell",
+      "count": 1,
+      "time": 15,
+      "inputs": {
+        "explosives": 8,
+        "explosive_cannon_shell": 4,
+        "radar": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "laser_turret",
+      "count": 1,
+      "time": 20,
+      "inputs": {
+        "steel": 20,
+        "battery": 12,
+        "circuit": 20
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "substation",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "steel": 10,
+        "copper_wire": 6,
+        "red_circuit": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "accumulator",
+      "count": 1,
+      "time": 10,
+      "inputs": {
+        "iron_plate": 2,
+        "battery": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "solar_panel",
+      "count": 1,
+      "time": 10,
+      "inputs": {
+        "copper_plate": 5,
+        "steel": 5,
+        "circuit": 15
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "portable_solar_panel",
+      "count": 1,
+      "time": 10,
+      "inputs": {
+        "steel": 5,
+        "red_circuit": 2,
+        "solar_panel": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "rail",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "iron_stick": 1,
+        "steel": 1,
+        "stone": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "production_science_pack",
+      "count": 3,
+      "time": 21,
+      "inputs": {
+        "rail": 30,
+        "electric_furnace": 1,
+        "productivity_module_1": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "steel_chest",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "steel": 8
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "logistic_chest",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "steel_chest": 1,
+        "circuit": 3,
+        "red_circuit": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "auto_crafter_3",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "auto_crafter_2": 2,
+        "speed_module_1": 4
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "bulk_inserter",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "fast_inserter": 1,
+        "gear": 15,
+        "circuit": 15,
+        "red_circuit": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "landfill",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "stone": 50
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "red_splitter",
+      "count": 1,
+      "time": 2,
+      "inputs": {
+        "splitter": 1,
+        "circuit": 10,
+        "gear": 10
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "red_underground_belt",
+      "count": 2,
+      "time": 2,
+      "inputs": {
+        "underground_belt": 2,
+        "gear": 40
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "concrete",
+      "count": 10,
+      "time": 10,
+      "inputs": {
+        "water": 100,
+        "stone_brick": 5,
+        "iron_ore": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "efficiency_module_1",
+      "count": 1,
+      "time": 15,
+      "inputs": {
+        "circuit": 5,
+        "red_circuit": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "speed_module_1",
+      "count": 1,
+      "time": 15,
+      "inputs": {
+        "circuit": 5,
+        "red_circuit": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "speed_module_2",
+      "count": 1,
+      "time": 30,
+      "inputs": {
+        "red_circuit": 5,
+        "blue_circuit": 5,
+        "speed_module_1": 4
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "speed_module_3",
+      "count": 1,
+      "time": 60,
+      "inputs": {
+        "red_circuit": 5,
+        "blue_circuit": 5,
+        "speed_module_2": 4
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "productivity_module_1",
+      "count": 1,
+      "time": 15,
+      "inputs": {
+        "circuit": 5,
+        "red_circuit": 5
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "productivity_module_2",
+      "count": 1,
+      "time": 30,
+      "inputs": {
+        "red_circuit": 5,
+        "blue_circuit": 5,
+        "productivity_module_1": 4
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "productivity_module_3",
+      "count": 1,
+      "time": 60,
+      "inputs": {
+        "red_circuit": 5,
+        "blue_circuit": 5,
+        "productivity_module_2": 4
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "blue_belt",
+      "count": 1,
+      "time": 0.5,
+      "inputs": {
+        "gear": 10,
+        "red_belt": 1
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "blue_splitter",
+      "count": 1,
+      "time": 2,
+      "inputs": {
+        "splitter": 1,
+        "red_circuit": 10,
+        "gear": 10
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "blue_underground_belt",
+      "count": 2,
+      "time": 2,
+      "inputs": {
+        "red_underground_belt": 2,
+        "gear": 80
+      },
+      "supports_production_modules": false
+    },
+    {
+      "output": "rocket_fuel",
+      "count": 1,
+      "time": 15,
+      "inputs": {
+        "solid_fuel": 10,
+        "light_oil": 10
+      },
+      "supports_production_modules": true
+    }
+  ]
+}

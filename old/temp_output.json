@@ -1,0 +1,401 @@
+{
+  "recipes": [
+    {
+      "output": "copper_wire",
+      "count": 2,
+      "craft_time": 0.5,
+      "inputs": {
+        "copper_plate": 1
+      }
+    },
+    {
+      "output": "circuit",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "copper_wire": 3,
+        "iron_plate": 1
+      }
+    },
+    {
+      "output": "inserter",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "copper_wire": 3,
+        "gear": 1,
+        "iron_plate": 1
+      }
+    },
+    {
+      "output": "belt",
+      "count": 2,
+      "craft_time": 0.5,
+      "inputs": {
+        "gear": 1,
+        "iron_plate": 1
+      }
+    },
+    {
+      "output": "ammo",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "iron_plate": 1
+      }
+    },
+    {
+      "output": "underground_belt",
+      "count": 2,
+      "craft_time": 1,
+      "inputs": {
+        "belt": 5,
+        "iron_plate": 2
+      }
+    },
+    {
+      "output": "splitter",
+      "count": 1,
+      "craft_time": 1,
+      "inputs": {
+        "circuit": 5,
+        "belt": 4,
+        "iron_plate": 5
+      }
+    },
+    {
+      "output": "long_inserter",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "inserter": 1,
+        "gear": 1,
+        "iron_plate": 1
+      }
+    },
+    {
+      "output": "medium_electric_pole",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "copper_wire": 2,
+        "iron_stick": 4,
+        "steel": 2
+      }
+    },
+    {
+      "output": "big_electric_pole",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "copper_wire": 4,
+        "iron_stick": 8,
+        "steel": 5
+      }
+    },
+    {
+      "output": "auto_crafter_1",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "circuit": 3,
+        "gear": 5,
+        "iron_plate": 9
+      }
+    },
+    {
+      "output": "electric_drill",
+      "count": 1,
+      "craft_time": 2,
+      "inputs": {
+        "circuit": 3,
+        "gear": 5,
+        "iron_plate": 10
+      }
+    },
+    {
+      "output": "wall",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "stone_brick": 5
+      }
+    },
+    {
+      "output": "steel_furnace",
+      "count": 1,
+      "craft_time": 3,
+      "inputs": {
+        "steel": 6,
+        "stone_brick": 10
+      }
+    },
+    {
+      "output": "auto_crafter_2",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "auto_crafter_1": 1,
+        "circuit": 3,
+        "gear": 5,
+        "steel": 2
+      }
+    },
+    {
+      "output": "gun_turret",
+      "count": 1,
+      "craft_time": 8,
+      "inputs": {
+        "copper_plate": 10,
+        "gear": 10,
+        "iron_plate": 10
+      }
+    },
+    {
+      "output": "fast_inserter",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "iron_plate": 2,
+        "circuit": 2,
+        "inserter": 1
+      }
+    },
+    {
+      "output": "red_belt",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "belt": 1,
+        "gear": 5
+      }
+    },
+    {
+      "output": "lab",
+      "count": 1,
+      "craft_time": 1,
+      "inputs": {
+        "belt": 4,
+        "gear": 10,
+        "circuit": 10
+      }
+    },
+    {
+      "output": "asp",
+      "count": 1,
+      "craft_time": 5,
+      "inputs": {
+        "copper_plate": 1,
+        "iron_plate": 1
+      }
+    },
+    {
+      "output": "lsp",
+      "count": 1,
+      "craft_time": 6,
+      "inputs": {
+        "belt": 1,
+        "inserter": 1
+      }
+    },
+    {
+      "output": "pipe",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "iron_plate": 1
+      }
+    },
+    {
+      "output": "engine_unit",
+      "count": 1,
+      "craft_time": 10,
+      "inputs": {
+        "gear": 1,
+        "pipe": 2,
+        "steel": 1
+      }
+    },
+    {
+      "output": "steam_engine",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "gear": 8,
+        "pipe": 3,
+        "iron_plate": 10
+      }
+    },
+    {
+      "output": "offshore_pump",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "gear": 2,
+        "pipe": 3
+      }
+    },
+    {
+      "output": "pipe_to_ground",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "iron_plate": 5,
+        "pipe": 10
+      }
+    },
+    {
+      "output": "pump_jack",
+      "count": 1,
+      "craft_time": 5,
+      "inputs": {
+        "steel": 5,
+        "gear": 10,
+        "circuit": 5,
+        "pipe": 10
+      }
+    },
+    {
+      "output": "chemical_plant",
+      "count": 1,
+      "craft_time": 5,
+      "inputs": {
+        "steel": 5,
+        "gear": 5,
+        "circuit": 5,
+        "pipe": 5
+      }
+    },
+    {
+      "output": "oil_refinery",
+      "count": 1,
+      "craft_time": 8,
+      "inputs": {
+        "steel": 15,
+        "gear": 10,
+        "circuit": 10,
+        "pipe": 10,
+        "stone_brick": 10
+      }
+    },
+    {
+      "output": "gate",
+      "count": 1,
+      "craft_time": 0.5,
+      "inputs": {
+        "wall": 1,
+        "circuit": 2,
+        "steel": 2
+      }
+    },
+    {
+      "output": "slowdown_capsule",
+      "count": 1,
+      "craft_time": 8,
+      "inputs": {
+        "coal": 5,
+        "steel": 2,
+        "circuit": 2
+      }
+    },
+    {
+      "output": "poison_capsule",
+      "count": 1,
+      "craft_time": 8,
+      "inputs": {
+        "coal": 10,
+        "steel": 3,
+        "circuit": 3
+      }
+    },
+    {
+      "output": "grenade",
+      "count": 1,
+      "craft_time": 8,
+      "inputs": {
+        "coal": 10,
+        "iron_plate": 5
+      }
+    },
+    {
+      "output": "piercing_ammo",
+      "count": 1,
+      "craft_time": 3,
+      "inputs": {
+        "copper_plate": 5,
+        "ammo": 1,
+        "steel": 1
+      }
+    },
+    {
+      "output": "msp",
+      "count": 2,
+      "craft_time": 10,
+      "inputs": {
+        "piercing_ammo": 1,
+        "grenade": 1,
+        "wall": 2
+      }
+    },
+    {
+      "output": "red_circuit",
+      "count": 1,
+      "craft_time": 6,
+      "inputs": {
+        "plastic": 2,
+        "circuit": 2,
+        "copper_wire": 4
+      }
+    },
+    {
+      "output": "csp",
+      "count": 2,
+      "craft_time": 24,
+      "inputs": {
+        "engine_unit": 2,
+        "red_circuit": 3,
+        "sulfur": 1
+      }
+    },
+    {
+      "output": "cannon_shell",
+      "count": 1,
+      "craft_time": 8,
+      "inputs": {
+        "steel": 2,
+        "plastic": 2,
+        "explosives": 1
+      }
+    },
+    {
+      "output": "explosive_cannon_shell",
+      "count": 1,
+      "craft_time": 8,
+      "inputs": {
+        "steel": 2,
+        "plastic": 2,
+        "explosives": 2
+      }
+    },
+    {
+      "output": "low_density_structure",
+      "count": 1,
+      "craft_time": 15,
+      "inputs": {
+        "copper_plate": 20,
+        "steel": 2,
+        "plastic": 5
+      }
+    },
+    {
+      "output": "electric_furnace",
+      "count": 1,
+      "craft_time": 5,
+      "inputs": {
+        "steel": 10,
+        "red_circuit": 5,
+        "stone_brick": 10
+      }
+    }
+  ]
+}
