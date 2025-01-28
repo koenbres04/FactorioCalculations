@@ -46,6 +46,13 @@ class ChemicalFactory:
         # note: we output first to the oils_line because to prevent the solid fuel crafters from using petroleum made from
         # light oil, since it is better to use light oil directly
 
+        # add lubricant chemical plants
+        lubricant_plants = factory.add_machine_group(ChemicalPlant(
+            CHEMICAL_PLANT_RECIPES["lubricant"], chemical_plant_modules
+        ))
+        factory.connect(oils_line, lubricant_plants, "heavy_oil")
+        factory.connect(lubricant_plants, self.output_line, "lubricant")
+
         # add oil cracking chemical plants
         heavy_oil_crackers = factory.add_machine_group(ChemicalPlant(
             CHEMICAL_PLANT_RECIPES["heavy_oil_cracking"], chemical_plant_modules
@@ -59,6 +66,9 @@ class ChemicalFactory:
         factory.connect(water_source, light_oil_crakers)
         factory.connect(oils_line, light_oil_crakers, "light_oil")
         factory.connect(light_oil_crakers, main_line, "petroleum_gas")
+
+        # add trash point for petroleum gas
+        factory.add_trash_point(main_line, "petroleum_gas")
 
         # add solid fuel chemical plants
         light_oil_solid_fuel_plants = factory.add_machine_group(ChemicalPlant(

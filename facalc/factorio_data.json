@@ -681,7 +681,8 @@
       "time": 10,
       "inputs": {
         "circuit": 2,
-        "engine_unit": 1
+        "engine_unit": 1,
+        "lubricant": 15
       },
       "supports_production_modules": true
     },
@@ -1010,7 +1011,8 @@
       "time": 0.5,
       "inputs": {
         "gear": 10,
-        "red_belt": 1
+        "red_belt": 1,
+        "lubricant": 20
       },
       "supports_production_modules": false
     },
@@ -1021,7 +1023,8 @@
       "inputs": {
         "splitter": 1,
         "red_circuit": 10,
-        "gear": 10
+        "gear": 10,
+        "lubricant": 80
       },
       "supports_production_modules": false
     },
@@ -1031,7 +1034,8 @@
       "time": 2,
       "inputs": {
         "red_underground_belt": 2,
-        "gear": 80
+        "gear": 80,
+        "lubricant": 40
       },
       "supports_production_modules": false
     },

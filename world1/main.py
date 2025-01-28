@@ -265,7 +265,7 @@ def main():
     factory.connect(copper_factory.output_belt, main_belt, "copper_plate")
     factory.connect(stone_factory.output_line, main_belt, "stone", "stone_brick", "concrete")
     factory.connect(chemical_factory.output_line, main_belt, "coal", "plastic", "sulfur", "sulfuric_acid",
-                    "explosives", "battery", "solid_fuel", "light_oil")
+                    "explosives", "battery", "solid_fuel", "light_oil", "lubricant")
     factory.connect(circuit_factory.output_line, main_belt, "circuit", "red_circuit", "blue_circuit")
     factory.connect(lds_factory.output_belt, main_belt, "low_density_structure")
     factory.connect(rail_factory.output_belt, main_belt, "rail")
