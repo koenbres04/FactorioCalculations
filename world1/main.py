@@ -9,6 +9,7 @@ from chemical_factory import ChemicalFactory
 from science_factory import ScienceFactory
 from module_factory import ModuleFactory
 from mini_factories import LDSFactory, RailFactory
+from nuclear_factory import NuclearFactory
 
 def main():
     factory = Factory()
@@ -129,6 +130,26 @@ def main():
         },
     )
 
+    rocket_fuel_line = factory.add_buffer("rocket_fuel_line")
+    nuclear_factory = NuclearFactory(
+        factory, iron_factory.output_belt, chemical_factory.output_line, rocket_fuel_line,
+        num_nuclear_reactors=10,
+        resource_bonus=resource_bonus,
+        num_drills=20,
+        drill_modules=(Module.PRODUCTION_MODULE_1,)*3,
+        centrifuge_modules=(Module.SPEED_MODULE_1,)*2,
+        crafter_level=3,
+        crafter_modules=(Module.PRODUCTION_MODULE_1,)*3,
+        input_caps={
+        },
+        output_caps={
+            "uranium-235": 7.5,
+            "uranium-238": 1.,
+            "nuclear_fuel": 1.,
+            "uranium_fuel_cell": 0.05,
+        }
+    )
+
     # add misc factory
     immediate_outputs = [
         "iron_plate",
@@ -154,6 +175,10 @@ def main():
         "speed_module_2",
         "productivity_module_3",
         "speed_module_3",
+        "uranium-235",
+        "uranium-238",
+        "nuclear_fuel",
+        "uranium_fuel_cell"
     ]
     stations = [
         "copper_wire",
@@ -197,6 +222,7 @@ def main():
         "explosive_cannon_shell",
         "electric_furnace",
         "rocket",
+        "explosive_rocket",
         "electric_engine_unit",
         "flying_robot_frame",
         "logistic_robot",
@@ -271,6 +297,9 @@ def main():
     factory.connect(rail_factory.output_belt, main_belt, "rail")
     factory.connect(module_factory.output_line, main_belt, "productivity_module_2", "productivity_module_3",
                     "speed_module_2", "speed_module_3",)
+    factory.connect(main_belt, rocket_fuel_line, "rocket_fuel")
+    factory.connect(nuclear_factory.output_line, main_belt,
+                    "uranium-235", "uranium-238", "nuclear_fuel", "uranium_fuel_cell")
 
     # add labs
     science_factory = ScienceFactory(
@@ -304,6 +333,8 @@ def main():
     circuit_factory.print_info(result)
     print("")
     module_factory.print_info(result)
+    print("")
+    nuclear_factory.print_info(result)
 
 
 if __name__ == '__main__':

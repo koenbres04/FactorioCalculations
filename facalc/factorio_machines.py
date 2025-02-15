@@ -182,41 +182,6 @@ class Lab(MachineType):
 
 
 @dataclass(frozen=True)
-class OilRefineryRecipe:
-    time: float
-    name: str
-    inp: dict[str, float]
-    outp: dict[str, float]
-    supports_prod_modules: bool
-
-
-@dataclass(frozen=True)
-class OilRefinery(MachineType):
-    recipe: OilRefineryRecipe
-    modules: tuple[Module, ...] = tuple()
-
-    @property
-    def input_rates(self) -> dict[str, float]:
-        return {name: amount / self.recipe.time * (1.+modules_to_speed_bonus(self.modules))
-                for name, amount in self.recipe.inp.items()}
-
-    @property
-    def output_rates(self) -> dict[str, float]:
-        return {name: amount / self.recipe.time * (1.+modules_to_speed_bonus(self.modules))*
-                      (1.+modules_to_production_bonus(self.modules))
-                for name, amount in self.recipe.outp.items()}
-
-    def display_info(self, rate: float) -> str:
-        if rate == float("inf"):
-            return f"infinitely many {self.recipe.name} refineries"
-        num_refineries = ceil(rate)
-        return f"{num_refineries} {self.recipe.name} refineries"
-
-    def get_cap_description(self) -> str:
-        return f"{self.recipe.name} refinery cap"
-
-
-@dataclass(frozen=True)
 class ChemicalPlantRecipe:
     time: float
     name: str
@@ -253,6 +218,118 @@ class ChemicalPlant(MachineType):
         return f"{self.recipe.outp} chemical plant cap"
 
 
+@dataclass(frozen=True)
+class CompleteRecipe:
+    time: float
+    name: str
+    inp: dict[str, float]
+    outp: dict[str, float]
+    supports_prod_modules: bool
+
+    @staticmethod
+    def from_json(data: dict):
+        return CompleteRecipe(
+            time=data["time"],
+            name=data["name"],
+            outp=data["outputs"],
+            inp=data["inputs"],
+            supports_prod_modules=data["supports_production_modules"]
+        )
+
+
+@dataclass(frozen=True)
+class OilRefinery(MachineType):
+    recipe: CompleteRecipe
+    modules: tuple[Module, ...] = tuple()
+
+    @property
+    def input_rates(self) -> dict[str, float]:
+        return {name: amount / self.recipe.time * (1.+modules_to_speed_bonus(self.modules))
+                for name, amount in self.recipe.inp.items()}
+
+    @property
+    def output_rates(self) -> dict[str, float]:
+        return {name: amount / self.recipe.time * (1.+modules_to_speed_bonus(self.modules))*
+                      (1.+modules_to_production_bonus(self.modules))
+                for name, amount in self.recipe.outp.items()}
+
+    def display_info(self, rate: float) -> str:
+        if rate == float("inf"):
+            return f"infinitely many {self.recipe.name} refineries"
+        num_refineries = ceil(rate)
+        return f"{num_refineries} {self.recipe.name} refineries"
+
+    def get_cap_description(self) -> str:
+        return f"{self.recipe.name} refinery cap"
+
+
+@dataclass(frozen=True)
+class Centrifuge(MachineType):
+    recipe: CompleteRecipe
+    modules: tuple[Module, ...] = tuple()
+
+    @property
+    def input_rates(self) -> dict[str, float]:
+        return {name: amount / self.recipe.time * (1.+modules_to_speed_bonus(self.modules))
+                for name, amount in self.recipe.inp.items()}
+
+    @property
+    def output_rates(self) -> dict[str, float]:
+        return {name: amount / self.recipe.time * (1.+modules_to_speed_bonus(self.modules))*
+                      (1.+modules_to_production_bonus(self.modules))
+                for name, amount in self.recipe.outp.items()}
+
+    def display_info(self, rate: float) -> str:
+        if rate == float("inf"):
+            return f"infinitely many {self.recipe.name} centrifuges"
+        num_refineries = ceil(rate)
+        return f"{num_refineries} {self.recipe.name} centrifuges"
+
+    def get_cap_description(self) -> str:
+        return f"{self.recipe.name} centrifuge cap"
+
+
+@dataclass
+class UraniumDrill(MachineType):
+    resource_bonus: float = 0.
+    modules: tuple[Module, ...] = tuple()
+
+    @property
+    def input_rates(self) -> dict[str, float]:
+        return {"sulfuric_acid": 0.25*(1.+modules_to_speed_bonus(self.modules)),
+                "pre_uranium_ore": 0.25*(1.+modules_to_speed_bonus(self.modules))}
+
+    @property
+    def output_rates(self) -> dict[str, float]:
+        return {"uranium_ore": 0.25 * (1. + self.resource_bonus + modules_to_production_bonus(self.modules)) *
+                               (1.+modules_to_speed_bonus(self.modules))}
+
+    def display_info(self, rate: float) -> str:
+        if rate == float("inf"):
+            return f"infinitely many uranium drills"
+        num_drills = ceil(rate)
+        return f"{num_drills} uranium centrifuges"
+
+    def get_cap_description(self) -> str:
+        return f"number of uranium drills cap"
+
+
+class NuclearReactor(MachineType):
+    @property
+    def input_rates(self) -> dict[str, float]:
+        return {"uranium_fuel_cell": 1/200}
+
+    @property
+    def output_rates(self) -> dict[str, float]:
+        return {"depleted_uranium_fuel_cell": 1/200, "uranium_fuel_cell_power": 1/200}
+
+    def display_info(self, rate: float) -> str:
+        return f"{ceil(rate)} nuclear reactors"
+
+    def get_cap_description(self) -> str:
+        return f"nuclear reactor number cap"
+
+
 with open(os.path.join(os.path.dirname(__file__), "factorio_data.json")) as file:
     FACTORIO_DATA = json.load(file)
 
@@ -274,15 +351,9 @@ for data in FACTORIO_DATA["furnace_recipes"]:
         inp=data["inputs"],
         supports_prod_modules=data["supports_production_modules"]
     )
-OIL_REFINERY_RECIPES: dict[str, OilRefineryRecipe] = {}
+OIL_REFINERY_RECIPES: dict[str, CompleteRecipe] = {}
 for data in FACTORIO_DATA["oil_refinery_recipes"]:
-    OIL_REFINERY_RECIPES[data["name"]] = OilRefineryRecipe(
-        time=data["time"],
-        name=data["name"],
-        outp=data["outputs"],
-        inp=data["inputs"],
-        supports_prod_modules=data["supports_production_modules"]
-    )
+    OIL_REFINERY_RECIPES[data["name"]] = CompleteRecipe.from_json(data)
 CHEMICAL_PLANT_RECIPES: dict[str, ChemicalPlantRecipe] = {}
 for data in FACTORIO_DATA["chemical_plant_recipes"]:
     CHEMICAL_PLANT_RECIPES[data["name"]] = ChemicalPlantRecipe(
@@ -293,7 +364,9 @@ for data in FACTORIO_DATA["chemical_plant_recipes"]:
         inp=data["inputs"],
         supports_prod_modules=data["supports_production_modules"]
     )
-
+CENTRIFUGE_RECIPES: dict[str, CompleteRecipe] = {}
+for data in FACTORIO_DATA["centrifuge_recipes"]:
+    CENTRIFUGE_RECIPES[data["name"]] = CompleteRecipe.from_json(data)
 
 del FACTORIO_DATA
 

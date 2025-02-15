@@ -81,7 +81,6 @@ class ChemicalFactory:
         ))
         factory.connect(oils_line, petroleum_solid_fuel_plants, "petroleum_gas")
         factory.connect(petroleum_solid_fuel_plants, self.output_line)
-        factory.add_output_point(OutputPoint(self.output_line, "solid_fuel"))
 
         # add the chemical crafters for the remaining products
         basic_products = [
@@ -146,6 +145,7 @@ def main():
     factory.add_output_point(OutputPoint(chemical_factory.output_line, "sulfur"))
     factory.add_output_point(OutputPoint(chemical_factory.output_line, "explosives"))
     factory.add_output_point(OutputPoint(chemical_factory.output_line, "battery"))
+    factory.add_output_point(OutputPoint(chemical_factory.output_line, "solid_fuel"))
 
     results = factory.full_analyse()
     print(results.display_full())

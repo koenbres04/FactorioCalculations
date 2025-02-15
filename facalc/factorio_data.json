@@ -197,6 +197,56 @@
       "supports_production_modules": true
     }
   ],
+  "centrifuge_recipes": [
+    {
+      "name": "uranium_processing",
+      "inputs": {
+        "uranium_ore": 10
+      },
+      "time": 12,
+      "outputs": {
+        "uranium-238": 0.993,
+        "uranium-235": 0.007
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "kovarex_enrichment_process",
+      "inputs": {
+        "uranium-235": 40,
+        "uranium-238": 5
+      },
+      "time": 60,
+      "outputs": {
+        "uranium-235": 41,
+        "uranium-238": 2
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "nuclear_fuel",
+      "inputs": {
+        "uranium-235": 1,
+        "rocket_fuel": 1
+      },
+      "time": 90,
+      "outputs": {
+        "nuclear_fuel": 1
+      },
+      "supports_production_modules": true
+    },
+    {
+      "name": "nuclear_fuel_reprocessing",
+      "inputs": {
+        "depleted_uranium_fuel_cell": 5
+      },
+      "time": 60,
+      "outputs": {
+        "uranium-238": 3
+      },
+      "supports_production_modules": true
+    }
+  ],
   "crafter_recipes": [
     {
       "output": "gear",
@@ -665,6 +715,16 @@
       "supports_production_modules": false
     },
     {
+      "output": "explosive_rocket",
+      "count": 1,
+      "time": 8,
+      "inputs": {
+        "rocket": 1,
+        "explosives": 2
+      },
+      "supports_production_modules": false
+    },
+    {
       "output": "blue_circuit",
       "count": 1,
       "time": 10,
@@ -1046,6 +1106,17 @@
       "inputs": {
         "solid_fuel": 10,
         "light_oil": 10
+      },
+      "supports_production_modules": true
+    },
+    {
+      "output": "uranium_fuel_cell",
+      "count": 10,
+      "time": 10,
+      "inputs": {
+        "iron_plate": 10,
+        "uranium-235": 1,
+        "uranium-238": 19
       },
       "supports_production_modules": true
     }

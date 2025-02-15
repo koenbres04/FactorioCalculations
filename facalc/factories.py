@@ -139,6 +139,9 @@ class OutputPoint:
     material: str
     max_rate: float | None = None
 
+    def __str__(self):
+        return f"a {self.material} output point at {self.location}"
+
 
 class Bottleneck(abc.ABC):
     @abc.abstractmethod
@@ -198,7 +201,8 @@ class SingleAnalysisResults:
 
     @property
     def source_costs(self) -> dict[Source, float]:
-        return {source: source_rate/self.result_rate for source, source_rate in self.source_rates.items()}
+        return {source: source_rate/self.result_rate for source, source_rate in self.source_rates.items()
+                if self.result_rate != 0. and source_rate != float("inf")}
 
     def display(self) -> str:
         lines = [f"final rate: {self.display_one_line()}"]
@@ -213,12 +217,11 @@ class SingleAnalysisResults:
             lines.append(" -- trash rates -- ")
             for trash_point, rate in self.trash_rates.items():
                 lines.append(f"{trash_point.material}: {rate:.2f}/s")
-        if self.source_rates:
+        if self.source_costs:
             lines.append(" -- cost per unit material -- ")
             for source, cost in self.source_costs.items():
                 lines.append(f"{source.material}: {cost:.2f}")
-            else:
-                lines.append("???")
+        if self.source_rates:
             lines.append(" -- sources -- ")
             for source, rate in self.source_rates.items():
                 lines.append(f"{source.material}: {rate:.2f}/s")
@@ -393,8 +396,8 @@ class Factory:
             materials = (frm.material,)
         if not materials and isinstance(frm, MachineGroup) and len(frm.machine_type.output_rates.keys()) == 1:
             materials = (list(frm.machine_type.output_rates.keys())[0],)
-        if not materials and isinstance(to, MachineGroup) and len(frm.machine_type.input_rates.keys()) == 1:
-            materials = (list(frm.machine_type.input_rates.keys())[0],)
+        if not materials and isinstance(to, MachineGroup) and len(to.machine_type.input_rates.keys()) == 1:
+            materials = (list(to.machine_type.input_rates.keys())[0],)
         if not materials:
             raise ValueError("Unable to auto-detect material.")
         for material in materials:
@@ -691,7 +694,7 @@ class Factory:
                 new_to_minimize_vector[trash_points_start+i] = trash_point.weight
             # noinspection PyDeprecation
             result = scipy.optimize.linprog(
-                to_minimize_vector, inequalities_matrix, inequalities_bounds,
+                new_to_minimize_vector, inequalities_matrix, inequalities_bounds,
                 new_equalities_matrix, new_equalities_values
             )
             if result.status != 0:
