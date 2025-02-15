@@ -733,6 +733,25 @@ class Factory:
             elif result.status == 3:  # if the problem is unbounded, there are no bottlenecks left
                 break
             current_rate = result.x[0]
+            # if there are relevant trash points, minimize for the weighted sum of their rates
+            if any(result.x[trash_points_start + i] > 1e-9 for i in range(len(trash_points))):
+                rate_vector = np.zeros(num_variables, dtype=float)
+                rate_vector[0] = 1.
+                new_equalities_matrix = np.concatenate((equalities_matrix, np.array([rate_vector])))
+                new_equalities_values = np.concatenate((equalities_values, np.array([current_rate])))
+                new_to_minimize_vector = np.zeros(num_variables, dtype=float)
+                for i, trash_point in enumerate(trash_points):
+                    new_to_minimize_vector[trash_points_start + i] = trash_point.weight
+                # noinspection PyDeprecation
+                result = scipy.optimize.linprog(
+                    new_to_minimize_vector, inequalities_matrix, inequalities_bounds,
+                    new_equalities_matrix, new_equalities_values
+                )
+                if result.status != 0:
+                    raise FactoryAnalysisException(
+                        "Failed to solve the linear programming problem to minimize trash rates"
+                        " somehow.")
+            # obtain the new bottlenecks from the results
             bottlenecks_indices = [i for i, x in enumerate(result.slack) if x < 1e-9]
         return SingleAnalysisResults(optimal_rate, source_rates, buffer_throughput, machine_rates, trash_rates,
                                      tuple(ordered_bottlenecks))

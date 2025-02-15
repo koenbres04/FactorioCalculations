@@ -137,7 +137,7 @@ def main():
     factory.add_output_point(OutputPoint(nuclear_factory.output_line, "uranium-235", 7.5))
     factory.add_output_point(OutputPoint(nuclear_factory.output_line, "uranium-238", 7.5))
     factory.add_output_point(OutputPoint(nuclear_factory.output_line, "nuclear_fuel", 1.))
-    factory.add_output_point(OutputPoint(nuclear_factory.output_line, "uranium_fuel_cell", 0.05))
+    factory.add_output_point(OutputPoint(nuclear_factory.output_line, "uranium_fuel_cell", 7.5))
 
     results = factory.full_analyse()
     print(results.display_full())

@@ -133,7 +133,7 @@ def main():
     rocket_fuel_line = factory.add_buffer("rocket_fuel_line")
     nuclear_factory = NuclearFactory(
         factory, iron_factory.output_belt, chemical_factory.output_line, rocket_fuel_line,
-        num_nuclear_reactors=10,
+        num_nuclear_reactors=50,
         resource_bonus=resource_bonus,
         num_drills=20,
         drill_modules=(Module.PRODUCTION_MODULE_2,)*3,
@@ -144,9 +144,9 @@ def main():
         },
         output_caps={
             "uranium-235": 7.5,
-            "uranium-238": 1.,
-            "nuclear_fuel": 1.,
-            "uranium_fuel_cell": 0.05,
+            "uranium-238": 7.5,
+            "nuclear_fuel": 7.5,
+            "uranium_fuel_cell": 7.5,
         }
     )
 
@@ -335,6 +335,8 @@ def main():
     module_factory.print_info(result)
     print("")
     nuclear_factory.print_info(result)
+    print("\n\n")
+    print(result.single_results[nuclear_factory.power_output_point].display())
 
 
 if __name__ == '__main__':
