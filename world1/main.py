@@ -136,10 +136,10 @@ def main():
         num_nuclear_reactors=10,
         resource_bonus=resource_bonus,
         num_drills=20,
-        drill_modules=(Module.PRODUCTION_MODULE_1,)*3,
-        centrifuge_modules=(Module.SPEED_MODULE_1,)*2,
+        drill_modules=(Module.PRODUCTION_MODULE_2,)*3,
+        centrifuge_modules=(Module.PRODUCTION_MODULE_1,)*2,
         crafter_level=3,
-        crafter_modules=(Module.PRODUCTION_MODULE_1,)*3,
+        crafter_modules=(Module.PRODUCTION_MODULE_3,)*3,
         input_caps={
         },
         output_caps={

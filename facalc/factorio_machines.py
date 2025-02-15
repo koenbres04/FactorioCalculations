@@ -3,6 +3,7 @@ from facalc.factories import *
 import enum
 from math import ceil
 import os.path
+from functools import lru_cache
 
 
 class Module(enum.Enum):
@@ -236,6 +237,19 @@ class CompleteRecipe:
             supports_prod_modules=data["supports_production_modules"]
         )
 
+    def get_input_rates(self, modules: tuple[Module, ...]) -> dict[str, float]:
+        return {name: amount / self.time * (1.+modules_to_speed_bonus(modules))
+                for name, amount in self.inp.items()}
+
+    def get_output_rates(self, modules: tuple[Module, ...]) -> dict[str, float]:
+        result = {}
+        for name, amount in self.outp.items():
+            input_amount = self.inp[name] if name in self.inp else 0.
+            new_amount = (amount if input_amount >= amount else
+                          (amount-input_amount)*(1.+modules_to_production_bonus(modules))+input_amount)
+            result[name] = new_amount / self.time * (1.+modules_to_speed_bonus(modules))
+        return result
+
 
 @dataclass(frozen=True)
 class OilRefinery(MachineType):
@@ -244,14 +258,11 @@ class OilRefinery(MachineType):
 
     @property
     def input_rates(self) -> dict[str, float]:
-        return {name: amount / self.recipe.time * (1.+modules_to_speed_bonus(self.modules))
-                for name, amount in self.recipe.inp.items()}
+        return self.recipe.get_input_rates(self.modules)
 
     @property
     def output_rates(self) -> dict[str, float]:
-        return {name: amount / self.recipe.time * (1.+modules_to_speed_bonus(self.modules))*
-                      (1.+modules_to_production_bonus(self.modules))
-                for name, amount in self.recipe.outp.items()}
+        return self.recipe.get_output_rates(self.modules)
 
     def display_info(self, rate: float) -> str:
         if rate == float("inf"):
@@ -270,14 +281,11 @@ class Centrifuge(MachineType):
 
     @property
     def input_rates(self) -> dict[str, float]:
-        return {name: amount / self.recipe.time * (1.+modules_to_speed_bonus(self.modules))
-                for name, amount in self.recipe.inp.items()}
+        return self.recipe.get_input_rates(self.modules)
 
     @property
     def output_rates(self) -> dict[str, float]:
-        return {name: amount / self.recipe.time * (1.+modules_to_speed_bonus(self.modules))*
-                      (1.+modules_to_production_bonus(self.modules))
-                for name, amount in self.recipe.outp.items()}
+        return self.recipe.get_output_rates(self.modules)
 
     def display_info(self, rate: float) -> str:
         if rate == float("inf"):

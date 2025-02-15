@@ -129,7 +129,7 @@ def main():
         },
         output_caps={
         },
-        centrifuge_modules=(Module.SPEED_MODULE_1,)*2,
+        centrifuge_modules=(Module.PRODUCTION_MODULE_1,)*2,
         crafter_modules=(Module.PRODUCTION_MODULE_3,)*4,
         crafter_level=3,
         drill_modules=(Module.PRODUCTION_MODULE_2,)*3
