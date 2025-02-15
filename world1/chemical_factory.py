@@ -1,13 +1,13 @@
-from facalc.factories import Factory, OutputPoint, Buffer, FullAnalysisResults, SingleAnalysisResults
+from facalc.factories import SubFactory, OutputPoint, Buffer, FullAnalysisResults, new_factory
 from facalc.factorio_machines import (Module, ChemicalPlant, CHEMICAL_PLANT_RECIPES, OilRefinery, OIL_REFINERY_RECIPES,
                                get_crude_oil_rate)
 from typing import Iterable
 
 
-class ChemicalFactory:
+class ChemicalFactory(SubFactory):
     def __init__(
             self,
-            factory: Factory, iron_plate_input: Buffer, copper_plate_input: Buffer,
+            parent: SubFactory, iron_plate_input: Buffer, copper_plate_input: Buffer,
             pumpjack_bonus: float,
             coal_rate: float | None = None,
             water_rate: float | None = None,
@@ -18,69 +18,70 @@ class ChemicalFactory:
             input_caps: dict[str, float] | None = None,
             output_caps: dict[str, float] | None = None
         ):
+        super().__init__(parent)
         # add sources
-        coal_source = factory.add_source("coal", coal_rate)
-        water_source = factory.add_source("water", water_rate)
+        coal_source = self.add_source("coal", coal_rate)
+        water_source = self.add_source("water", water_rate)
         self.oil_rate = get_crude_oil_rate(crude_oil_rates, pumpjack_bonus, pumpjack_modules)
-        oil_source = factory.add_source("crude_oil", self.oil_rate)
+        oil_source = self.add_source("crude_oil", self.oil_rate)
 
         # create the main, oils line and output line
-        main_line = factory.add_buffer("chemical factory line", input_caps)
-        factory.connect(coal_source, main_line)
-        factory.connect(water_source, main_line)
-        factory.connect(iron_plate_input, main_line, "iron_plate")
-        factory.connect(copper_plate_input, main_line, "copper_plate")
-        self.output_line = factory.add_buffer("chemical factory output", output_caps)
-        factory.connect(main_line, self.output_line, "coal")
-        oils_line = factory.add_buffer("oils line")
+        main_line = self.add_buffer("chemical factory line", input_caps)
+        self.connect(coal_source, main_line)
+        self.connect(water_source, main_line)
+        self.connect(iron_plate_input, main_line, "iron_plate")
+        self.connect(copper_plate_input, main_line, "copper_plate")
+        self.output_line = self.add_buffer("chemical factory output", output_caps)
+        self.connect(main_line, self.output_line, "coal")
+        oils_line = self.add_buffer("oils line")
 
         # add refineries
-        refineries = factory.add_machine_group(OilRefinery(
+        refineries = self.add_machine_group(OilRefinery(
             OIL_REFINERY_RECIPES["advanced_oil_processing"], oil_refinery_modules
         ))
-        factory.connect(water_source, refineries)
-        factory.connect(oil_source, refineries)
-        factory.connect(refineries, oils_line, "heavy_oil", "light_oil", "petroleum_gas")
-        factory.connect(oils_line, main_line, "petroleum_gas")
-        factory.connect(oils_line, self.output_line, "light_oil")
+        self.connect(water_source, refineries)
+        self.connect(oil_source, refineries)
+        self.connect(refineries, oils_line, "heavy_oil", "light_oil", "petroleum_gas")
+        self.connect(oils_line, main_line, "petroleum_gas")
+        self.connect(oils_line, self.output_line, "light_oil")
         # note: we output first to the oils_line because to prevent the solid fuel crafters from using petroleum made from
         # light oil, since it is better to use light oil directly
 
         # add lubricant chemical plants
-        lubricant_plants = factory.add_machine_group(ChemicalPlant(
+        lubricant_plants = self.add_machine_group(ChemicalPlant(
             CHEMICAL_PLANT_RECIPES["lubricant"], chemical_plant_modules
         ))
-        factory.connect(oils_line, lubricant_plants, "heavy_oil")
-        factory.connect(lubricant_plants, self.output_line, "lubricant")
+        self.connect(oils_line, lubricant_plants, "heavy_oil")
+        self.connect(lubricant_plants, self.output_line, "lubricant")
 
         # add oil cracking chemical plants
-        heavy_oil_crackers = factory.add_machine_group(ChemicalPlant(
+        heavy_oil_crackers = self.add_machine_group(ChemicalPlant(
             CHEMICAL_PLANT_RECIPES["heavy_oil_cracking"], chemical_plant_modules
         ))
-        factory.connect(water_source, heavy_oil_crackers)
-        factory.connect(oils_line, heavy_oil_crackers, "heavy_oil")
-        factory.connect(heavy_oil_crackers, oils_line, "light_oil")
-        light_oil_crakers = factory.add_machine_group(ChemicalPlant(
+        self.connect(water_source, heavy_oil_crackers)
+        self.connect(oils_line, heavy_oil_crackers, "heavy_oil")
+        self.connect(heavy_oil_crackers, oils_line, "light_oil")
+        light_oil_crakers = self.add_machine_group(ChemicalPlant(
             CHEMICAL_PLANT_RECIPES["light_oil_cracking"], chemical_plant_modules
         ))
-        factory.connect(water_source, light_oil_crakers)
-        factory.connect(oils_line, light_oil_crakers, "light_oil")
-        factory.connect(light_oil_crakers, main_line, "petroleum_gas")
+        self.connect(water_source, light_oil_crakers)
+        self.connect(oils_line, light_oil_crakers, "light_oil")
+        self.connect(light_oil_crakers, main_line, "petroleum_gas")
 
         # add trash point for petroleum gas
-        factory.add_trash_point(main_line, "petroleum_gas")
+        self.add_trash_point(main_line, "petroleum_gas")
 
         # add solid fuel chemical plants
-        light_oil_solid_fuel_plants = factory.add_machine_group(ChemicalPlant(
+        light_oil_solid_fuel_plants = self.add_machine_group(ChemicalPlant(
             CHEMICAL_PLANT_RECIPES["solid_fuel_from_light_oil"], chemical_plant_modules
         ))
-        factory.connect(oils_line, light_oil_solid_fuel_plants, "light_oil")
-        factory.connect(light_oil_solid_fuel_plants, self.output_line)
-        petroleum_solid_fuel_plants = factory.add_machine_group(ChemicalPlant(
+        self.connect(oils_line, light_oil_solid_fuel_plants, "light_oil")
+        self.connect(light_oil_solid_fuel_plants, self.output_line)
+        petroleum_solid_fuel_plants = self.add_machine_group(ChemicalPlant(
             CHEMICAL_PLANT_RECIPES["solid_fuel_from_petroleum_gas"], chemical_plant_modules
         ))
-        factory.connect(oils_line, petroleum_solid_fuel_plants, "petroleum_gas")
-        factory.connect(petroleum_solid_fuel_plants, self.output_line)
+        self.connect(oils_line, petroleum_solid_fuel_plants, "petroleum_gas")
+        self.connect(petroleum_solid_fuel_plants, self.output_line)
 
         # add the chemical crafters for the remaining products
         basic_products = [
@@ -91,21 +92,22 @@ class ChemicalFactory:
             "battery",
         ]
         for material in basic_products:
-            chemical_plants = factory.add_machine_group(ChemicalPlant(
+            chemical_plants = self.add_machine_group(ChemicalPlant(
                 CHEMICAL_PLANT_RECIPES[material], chemical_plant_modules
             ))
-            factory.connect(main_line, chemical_plants, *CHEMICAL_PLANT_RECIPES[material].inp.keys())
-            factory.connect(chemical_plants, main_line)
-            factory.connect(main_line, self.output_line, material)
+            self.connect(main_line, chemical_plants, *CHEMICAL_PLANT_RECIPES[material].inp.keys())
+            self.connect(chemical_plants, main_line)
+            self.connect(main_line, self.output_line, material)
 
-    def print_info(self, results: FullAnalysisResults | SingleAnalysisResults):
+    def print_info(self, results: FullAnalysisResults):
         print("-------- chemical factory info")
         print(f"theoretical crude oil rate: {self.oil_rate:.2f} /s")
-        print("...")
+        self.print_machines(results.max_rates)
+        self.print_buffer_throughput(results.max_rates)
 
 
 def main():
-    factory = Factory()
+    factory = new_factory()
 
     iron_plate_source = factory.add_source("iron_plate", 15)
     iron_line = factory.add_buffer("test iron plate line")
@@ -116,7 +118,7 @@ def main():
     factory.connect(copper_plate_source, copper_line, "copper_plate")
 
     chemical_factory = ChemicalFactory(
-        factory, iron_plate_source, copper_plate_source,
+        factory, iron_line, copper_line,
         coal_rate=15,
         pumpjack_bonus=.3,
         crude_oil_rates=[
@@ -147,7 +149,7 @@ def main():
     factory.add_output_point(OutputPoint(chemical_factory.output_line, "battery"))
     factory.add_output_point(OutputPoint(chemical_factory.output_line, "solid_fuel"))
 
-    results = factory.full_analyse()
+    results = factory.analyse()
     print(results.display_full())
     print("")
     chemical_factory.print_info(results)

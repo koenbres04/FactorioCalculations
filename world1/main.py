@@ -1,8 +1,8 @@
-from facalc.factories import Factory, OutputPoint
+from facalc.factories import OutputPoint, new_factory
 from facalc.factorio_machines import Module
 from iron_factory import IronFactory
 from copper_factory import CopperFactory
-from misc_factory import add_misc_factory
+from misc_factory import MiscFactory
 from stone_factory import StoneFactory
 from circuit_factory import CircuitFactory
 from chemical_factory import ChemicalFactory
@@ -12,7 +12,7 @@ from mini_factories import LDSFactory, RailFactory
 from nuclear_factory import NuclearFactory
 
 def main():
-    factory = Factory()
+    factory = new_factory()
     # global parameters
     resource_bonus = .3
 
@@ -252,7 +252,7 @@ def main():
         "blue_splitter",
         "blue_underground_belt",
     ]
-    main_belt = add_misc_factory(
+    misc_factory = MiscFactory(
         factory,
         immediate_outputs=immediate_outputs,
         stations=stations,
@@ -287,6 +287,7 @@ def main():
         productivity_crafter_level=3,
         productivity_crafter_modules=(Module.PRODUCTION_MODULE_1,)*4
     )
+    main_belt = misc_factory.main_belt
     factory.connect(iron_factory.output_belt, main_belt, "iron_plate", "gear", "steel")
     factory.connect(copper_factory.output_belt, main_belt, "copper_plate")
     factory.connect(stone_factory.output_line, main_belt, "stone", "stone_brick", "concrete")
@@ -311,16 +312,20 @@ def main():
     )
 
     # analyse the factory
-    result = factory.full_analyse(print_progress=True)
+    result = factory.analyse(print_progress=True)
 
     # print info
+    print(" --- output rates")
     print(result.display())
 
     print("\n\n\n")
+    misc_factory.print_info(result)
+    print("")
     science_factory.print_info(result, "alcpum")
     print("")
     print(" --- productivity module 2")
     print(result.single_results[OutputPoint(main_belt, "productivity_module_2")].display())
+    print("")
     print(" --- productivity module 3")
     print(result.single_results[OutputPoint(main_belt, "productivity_module_3")].display())
     print("")
@@ -335,7 +340,8 @@ def main():
     module_factory.print_info(result)
     print("")
     nuclear_factory.print_info(result)
-    print("\n\n")
+    print("")
+    print(" --- fuel cell power")
     print(result.single_results[nuclear_factory.power_output_point].display())
 
 

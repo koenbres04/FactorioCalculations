@@ -1,8 +1,8 @@
-from facalc.factories import Factory, OutputPoint
+from facalc.factories import new_factory, OutputPoint
 from facalc.factorio_machines import Crafter, ElectronicFurnace, FURNACE_RECIPES, CRAFTER_RECIPES
 
 def main():
-    factory = Factory()
+    factory = new_factory()
 
     # temporary hardcoded recipes
     iron_smelt_recipe = FURNACE_RECIPES["iron_plate"]
@@ -27,8 +27,7 @@ def main():
     factory.connect(iron_factory_buffer, belt_crafters, "gear")
     factory.add_output_point(OutputPoint(belt_crafters, "belt"))
 
-    result = factory.full_analyse()
-    print(result.display_full())
+    factory.default_print_info(factory.analyse())
 
 
 if __name__ == '__main__':

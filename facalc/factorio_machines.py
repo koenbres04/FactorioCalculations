@@ -3,7 +3,6 @@ from facalc.factories import *
 import enum
 from math import ceil
 import os.path
-from functools import lru_cache
 
 
 class Module(enum.Enum):

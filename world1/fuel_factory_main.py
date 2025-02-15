@@ -1,5 +1,5 @@
-from facalc.factories import Factory, OutputPoint, Buffer
-from facalc.factorio_machines import (Module, get_crude_oil_rate, ChemicalPlant, ChemicalPlantRecipe,
+from facalc.factories import new_factory, OutputPoint
+from facalc.factorio_machines import (Module, get_crude_oil_rate, ChemicalPlant,
                                       CHEMICAL_PLANT_RECIPES, OilRefinery, OIL_REFINERY_RECIPES)
 from math import ceil
 
@@ -16,7 +16,7 @@ def main():
 
     output_cap = 2*22.5
 
-    factory = Factory()
+    factory = new_factory()
 
     # create sources
     oil_rate = get_crude_oil_rate(crude_oil_rates, pumpjack_bonus, pumpjack_modules)
@@ -53,9 +53,10 @@ def main():
     factory.connect(oils_line, petroleum_solid_fuel_plants, "petroleum_gas")
     factory.connect(petroleum_solid_fuel_plants, output_line)
 
+    factory.add_output_point(OutputPoint(output_line, "solid_fuel"))
 
-    result = factory.analyse(OutputPoint(output_line, "solid_fuel"))
-    print(result.display())
+    result = factory.analyse().single_results[OutputPoint(output_line, "solid_fuel")]
+    print(result.display(True, True, True, True))
 
     final_rate = result.result_rate
     print("")

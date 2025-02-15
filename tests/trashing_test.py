@@ -1,11 +1,11 @@
-from facalc.factories import Factory, OutputPoint
-from facalc.factorio_machines import (OilRefinery, OilRefineryRecipe, Crafter, CrafterRecipe)
+from facalc.factories import new_factory, OutputPoint
+from facalc.factorio_machines import OilRefinery, CompleteRecipe, Crafter, CrafterRecipe
 
 def main():
-    factory = Factory()
+    factory = new_factory()
 
     a_source = factory.add_source("A", 10)
-    refineries = factory.add_machine_group(OilRefinery(OilRefineryRecipe(
+    refineries = factory.add_machine_group(OilRefinery(CompleteRecipe(
         time=1.,
         name="A to B+C",
         inp={"A": 1.},
@@ -32,8 +32,7 @@ def main():
     factory.connect(crafters, main_line, "D")
     factory.add_output_point(OutputPoint(main_line, "D"))
 
-    results = factory.full_analyse()
-    print(results.display_full())
+    factory.default_print_info(factory.analyse())
 
 if __name__ == '__main__':
     main()

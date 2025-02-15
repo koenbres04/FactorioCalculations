@@ -74,17 +74,11 @@ class MachineGroup(FactoryNode):
         self.machine_cap = machine_cap
         super().__init__()
 
-    def input_rate(self, result: SingleAnalysisResults | FullAnalysisResults, material: str):
-        rate_dict = result.machine_rates if isinstance(result, SingleAnalysisResults) else result.max_machine_rates
-        if self not in rate_dict:
-            return 0.
-        return rate_dict[self]*self.machine_type.input_rates[material]
+    def input_rate(self, rates: FactoryRates, material: str):
+        return rates[self]*self.machine_type.input_rates[material]
 
-    def output_rate(self, result: SingleAnalysisResults | FullAnalysisResults, material: str):
-        rate_dict = result.machine_rates if isinstance(result, SingleAnalysisResults) else result.max_machine_rates
-        if self not in rate_dict:
-            return 0.
-        return rate_dict[self]*self.machine_type.output_rates[material]
+    def output_rate(self, rates: FactoryRates, material: str):
+        return rates[self]*self.machine_type.output_rates[material]
 
     @property
     def has_unconnected_inputs(self) -> bool:
@@ -190,56 +184,77 @@ class TrashPointRateCap(Bottleneck):
         return f"trash point rate cap of {str(self.trash_point)}"
 
 
+def update_sup_dict(a: dict[Any, float], b: dict[Any, float]):
+    for key, value in b.items():
+        if key not in a:
+            a[key] = 0.
+        a[key] = max(a[key], value)
+
+
 @dataclass(frozen=True)
-class SingleAnalysisResults:
-    result_rate: float
+class FactoryRates:
     source_rates: dict[Source, float]
     buffer_throughput: dict[tuple[Buffer, str], float]
     machine_rates: dict[MachineGroup, float]
     trash_rates: dict[TrashPoint, float]
+
+    def __getitem__(self, item: Source | tuple[Buffer, str] | MachineGroup | TrashPoint) -> float:
+        if isinstance(item, Source) and item in self.source_rates:
+            return self.source_rates[item]
+        if isinstance(item, tuple) and item in self.buffer_throughput:
+            return self.buffer_throughput[item]
+        if isinstance(item, MachineGroup) and item in self.machine_rates:
+            return self.machine_rates[item]
+        if isinstance(item, TrashPoint) and item in self.trash_rates:
+            return self.trash_rates[item]
+        return 0.
+
+    def get_throughputs(self, buffer: Buffer) -> tuple[str, float]:
+        for (other_buffer, material), throughput in self.buffer_throughput.items():
+            if buffer is other_buffer:
+                yield material, throughput
+
+    def update_sup(self, other: FactoryRates):
+        update_sup_dict(self.source_rates, other.source_rates)
+        update_sup_dict(self.buffer_throughput, other.buffer_throughput)
+        update_sup_dict(self.machine_rates, other.machine_rates)
+        update_sup_dict(self.trash_rates, other.trash_rates)
+
+
+
+@dataclass(frozen=True)
+class SingleAnalysisResults:
+    result_rate: float
+    rates: FactoryRates
     bottlenecks: tuple[tuple[float, Bottleneck], ...]
 
     @property
     def source_costs(self) -> dict[Source, float]:
-        return {source: source_rate/self.result_rate for source, source_rate in self.source_rates.items()
+        return {source: source_rate/self.result_rate for source, source_rate in self.rates.source_rates.items()
                 if self.result_rate != 0. and source_rate != float("inf")}
 
-    def display(self) -> str:
+    def display(self, bottlenecks: bool = True, trash_rates: bool = False, source_costs: bool = False,
+                source_rates: bool = False) -> str:
         lines = [f"final rate: {self.display_one_line()}"]
-        if len(self.bottlenecks) >= 2:
+        if bottlenecks and len(self.bottlenecks) >= 2:
             lines.append(" -- bottlenecks -- ")
             for i in range(len(self.bottlenecks)):
                 if i != len(self.bottlenecks)-1:
                     lines.append(f"{self.bottlenecks[i+1][0]:.2f} by removing {self.bottlenecks[i][1].display()}")
                 else:
                     lines.append(f"infinite by removing {self.bottlenecks[i][1].display()}")
-        if self.trash_rates:
+        if trash_rates and self.rates.trash_rates:
             lines.append(" -- trash rates -- ")
-            for trash_point, rate in self.trash_rates.items():
+            for trash_point, rate in self.rates.trash_rates.items():
                 lines.append(f"{trash_point.material}: {rate:.2f}/s")
-        if self.source_costs:
+        if source_costs and self.source_costs:
             lines.append(" -- cost per unit material -- ")
             for source, cost in self.source_costs.items():
                 lines.append(f"{source.material}: {cost:.2f}")
-        if self.source_rates:
+        if source_rates and self.rates.source_rates:
             lines.append(" -- sources -- ")
-            for source, rate in self.source_rates.items():
+            for source, rate in self.rates.source_rates.items():
                 lines.append(f"{source.material}: {rate:.2f}/s")
-        if self.buffer_throughput:
-            lines.append(" -- buffer throughput -- ")
-            throughput_by_buffer: dict[Buffer, dict[str, float]] = dict()
-            for (buffer, material), rate in self.buffer_throughput.items():
-                if not buffer in throughput_by_buffer:
-                    throughput_by_buffer[buffer] = dict()
-                throughput_by_buffer[buffer][material] = rate
-            for buffer, throughput_dict in throughput_by_buffer.items():
-                lines.append(buffer.name + ":")
-                for material, rate in throughput_dict.items():
-                    lines.append(f"- {material}: {rate:.2f}/s")
-        if self.machine_rates:
-            lines.append(" -- machines -- ")
-            for machine_group, rate in self.machine_rates.items():
-                lines.append(machine_group.machine_type.display_info(rate))
         return "\n".join(lines)
 
     def display_one_line(self) -> str:
@@ -255,75 +270,24 @@ class SingleAnalysisResults:
                     f"for another {bottleneck_factor:.1f}x")
 
 
-def update_sup_dict(a: dict[Any, float], b: dict[Any, float]):
-    for key, value in b.items():
-        if key not in a:
-            a[key] = 0.
-        a[key] = max(a[key], value)
-
-
 @dataclass(frozen=True)
 class FullAnalysisResults:
-    max_source_rates: dict[Source, float]
-    max_buffer_throughput: dict[tuple[Buffer, str], float]
-    max_machine_rates: dict[MachineGroup, float]
-    max_trash_rates: dict[TrashPoint, float]
+    max_rates: FactoryRates
     single_results: dict[OutputPoint, SingleAnalysisResults]
 
     @classmethod
     def from_single_analyses(cls, results: Iterable[tuple[OutputPoint, SingleAnalysisResults]]) -> FullAnalysisResults:
-        max_source_rates = dict()
-        max_buffer_throughput = dict()
-        max_machine_rates = dict()
-        max_trash_rates = dict()
-        single_results = dict()
+        max_rates = FactoryRates({}, {}, {}, {})
+        single_results = {}
         for output_point, result in results:
-            update_sup_dict(max_source_rates, result.source_rates)
-            update_sup_dict(max_buffer_throughput, result.buffer_throughput)
-            update_sup_dict(max_machine_rates, result.machine_rates)
-            update_sup_dict(max_trash_rates, result.trash_rates)
+            max_rates.update_sup(result.rates)
             single_results[output_point] = result
-        return FullAnalysisResults(max_source_rates, max_buffer_throughput, max_machine_rates, max_trash_rates,
-                                   single_results)
+        return FullAnalysisResults(max_rates, single_results)
 
     def display(self) -> str:
-        lines = []
-        if self.max_source_rates:
-            lines.append(" -- sources -- ")
-            for source, rate in self.max_source_rates.items():
-                lines.append(f"{source.material}: {rate:.2f}/s")
-        if self.max_trash_rates:
-            lines.append(" -- trash rates -- ")
-            for trash_point, rate in self.max_trash_rates.items():
-                lines.append(f"{trash_point.material}: {rate:.2f}/s")
-        if self.max_buffer_throughput:
-            lines.append(" -- buffer throughput -- ")
-            throughput_by_buffer: dict[Buffer, dict[str, float]] = dict()
-            for (buffer, material), rate in self.max_buffer_throughput.items():
-                if not buffer in throughput_by_buffer:
-                    throughput_by_buffer[buffer] = dict()
-                throughput_by_buffer[buffer][material] = rate
-            for buffer, throughput_dict in throughput_by_buffer.items():
-                lines.append(buffer.name + ":")
-                for material, rate in throughput_dict.items():
-                    lines.append(f"- {material}: {rate:.2f}/s")
-        if self.max_machine_rates:
-            lines.append(" -- machines -- ")
-            for machine_group, rate in self.max_machine_rates.items():
-                lines.append(machine_group.machine_type.display_info(rate))
-        lines.append(" -- single output rates -- ")
+        lines = [" -- single output rates -- "]
         for output_point, result in self.single_results.items():
             lines.append(f"{output_point.material}: {result.display_one_line()}")
-        return "\n".join(lines)
-
-    def display_full(self) -> str:
-        lines = []
-        for output_point, sub_result in self.single_results.items():
-            lines.append(f"-------- {output_point.material}")
-            lines.append(sub_result.display())
-            lines.append("")
-        lines.append("-------- full analysis")
-        lines.append(self.display())
         return "\n".join(lines)
 
 
@@ -331,10 +295,9 @@ class FactoryAnalysisException(Exception):
     pass
 
 
-class Factory:
+class _Factory:
     def __init__(self):
         self.nodes: list[FactoryNode] = []
-        self.output_points: list[OutputPoint] = []
 
     def add_buffer(self, name: str, rate_caps: dict[str, float] | None = None) -> Buffer:
         if rate_caps is None:
@@ -352,9 +315,6 @@ class Factory:
         machine_group = MachineGroup(machine_type, machine_cap)
         self.nodes.append(machine_group)
         return machine_group
-
-    def add_output_point(self, output_point: OutputPoint):
-        self.output_points.append(output_point)
 
     def add_trash_point(self, location: FactoryNode, material: str, weight: float = 1., max_rate: float | None = None) -> TrashPoint:
         if isinstance(location, Source):
@@ -457,15 +417,14 @@ class Factory:
         else:
             return sources, machine_groups, buffer_lines, buffer_transfers, did_hit
 
-    def _analyse(self, output_point: OutputPoint) -> SingleAnalysisResults:
+    def analyse(self, output_point: OutputPoint) -> SingleAnalysisResults:
         if isinstance(output_point.location, Source):
             raise FactoryAnalysisException("Taking output directly from a source is not supported.")
         if (isinstance(output_point.location, MachineGroup) and
                 output_point.material in output_point.location.output_materials):
             raise FactoryAnalysisException("Taking output from a machine group which already has "
                                            "output is not supported")
-        if any((output_point.location, output_point.material) == (trash_point.location, trash_point.material)
-               for trash_point in self.nodes if isinstance(trash_point, TrashPoint)):
+        if any(isinstance(node, TrashPoint) for node in output_point.location.outputs(output_point.material)):
             raise FactoryAnalysisException("Taking output from a node and material which already has a trash point is "
                                            "not supported")
         # find relevant nodes and trash points
@@ -517,8 +476,6 @@ class Factory:
             for material in machine_group.machine_type.output_materials:
                 if material not in machine_group.output_materials:
                     if output_point.location != machine_group or material != output_point.material:
-                        print(f"This is a temporary warning that a '{str(machine_group.machine_type)}' machine group had "
-                              f"disconnected inputs. (A proper warning system should be added.)")
                         found_disconnect = True
                         break
                     continue
@@ -531,8 +488,6 @@ class Factory:
                     found_disconnect = True
                     break
             if machine_group.has_unconnected_inputs:
-                print(f"This is a temporary warning that a '{str(machine_group.machine_type)}' machine group had disconnected "
-                      f"inputs. (A proper warning system should be added.)")
                 found_disconnect = True
             if found_disconnect:
                 coefficients = np.zeros(num_variables, float)
@@ -672,10 +627,12 @@ class Factory:
         if result.status == 3:
             return SingleAnalysisResults(
                 float("inf"),
-                {source: float("inf") for source in sources},
-                {x: float("inf") for x in buffer_lines},
-                {machine_group: float("inf") for machine_group in machine_groups},
-                {},
+                FactoryRates(
+                    {source: float("inf") for source in sources},
+                    {x: float("inf") for x in buffer_lines},
+                    {machine_group: float("inf") for machine_group in machine_groups},
+                    {},
+                ),
                 ()
             )
         elif result.status != 0:
@@ -753,52 +710,89 @@ class Factory:
                         " somehow.")
             # obtain the new bottlenecks from the results
             bottlenecks_indices = [i for i, x in enumerate(result.slack) if x < 1e-9]
-        return SingleAnalysisResults(optimal_rate, source_rates, buffer_throughput, machine_rates, trash_rates,
-                                     tuple(ordered_bottlenecks))
-
-    def analyse(self, output_point) -> SingleAnalysisResults:
-        result = self._analyse(output_point)
-        # perform some post-processing of the results
-        source_rates_items = list(result.source_rates.items())
-        source_rates_items.sort(key=lambda x: self.nodes.index(x[0]))
-        buffer_throughput_items = list(result.buffer_throughput.items())
-        buffer_throughput_items.sort(key=lambda x: self.nodes.index(x[0][0]))
-        machine_rates_items = list(result.machine_rates.items())
-        machine_rates_items.sort(key=lambda x: self.nodes.index(x[0]))
-        trash_rates_items = list(result.trash_rates.items())
-        trash_rates_items.sort(key=lambda x: self.nodes.index(x[0]))
         return SingleAnalysisResults(
-            result.result_rate,
-            {x: y for x, y in source_rates_items if y >= 1e-9},
-            {x: y for x, y in buffer_throughput_items if y >= 1e-9},
-            {x: y for x, y in machine_rates_items if y >= 1e-9},
-            {x: y for x, y in trash_rates_items if y >= 1e-9},
-            result.bottlenecks
+            optimal_rate,
+            FactoryRates(source_rates, buffer_throughput, machine_rates, trash_rates),
+            tuple(ordered_bottlenecks)
         )
 
 
-    def full_analyse(self, print_progress: bool = False) -> FullAnalysisResults:
+class SubFactory:
+    def __init__(self, parent: _Factory | SubFactory):
+        self.parent = parent
+        self._nodes: list[FactoryNode] = []
+        self._output_points: list[OutputPoint] = []
+
+    @property
+    def factory(self) -> _Factory:
+        if isinstance(self.parent, _Factory):
+            return self.parent
+        return self.parent.factory
+
+    def add_buffer(self, name: str, rate_caps: dict[str, float] | None = None) -> Buffer:
+        buffer = self.parent.add_buffer(name, rate_caps)
+        self._nodes.append(buffer)
+        return buffer
+
+    def add_source(self, material: str, max_rate: float | None = None) -> Source:
+        source = self.parent.add_source(material, max_rate)
+        self._nodes.append(source)
+        return source
+
+    def add_machine_group(self, machine_type: MachineType, machine_cap: float | None = None) -> MachineGroup:
+        machine_group = self.parent.add_machine_group(machine_type, machine_cap)
+        self._nodes.append(machine_group)
+        return machine_group
+
+    def add_output_point(self, output_point: OutputPoint):
+        if isinstance(self.parent, SubFactory):
+            self.parent.add_output_point(output_point)
+        self._output_points.append(output_point)
+
+    def add_trash_point(self, location: FactoryNode, material: str, weight: float = 1., max_rate: float | None = None) -> TrashPoint:
+        trash_point = self.parent.add_trash_point(location, material, weight, max_rate)
+        self._nodes.append(trash_point)
+        return trash_point
+
+    def connect(self, frm: FactoryNode, to: FactoryNode, *materials: str):
+        self.parent.connect(frm, to, *materials)
+
+    def analyse(self, print_progress: bool = False) -> FullAnalysisResults:
         sub_results = []
-        for i, output_point in enumerate(self.output_points):
+        for i, output_point in enumerate(self._output_points):
             if print_progress:
-                print(f"analysing output point {i+1}/{len(self.output_points)}", end="\r")
-            sub_results.append((output_point, self.analyse(output_point)))
+                print(f"analysing output point {i+1}/{len(self._output_points)}", end="\r")
+            sub_results.append((output_point, self.factory.analyse(output_point)))
         if print_progress:
             print("done!")
+        return FullAnalysisResults.from_single_analyses(sub_results)
 
-        result = FullAnalysisResults.from_single_analyses(sub_results)
-        source_rates_items = list(result.max_source_rates.items())
-        source_rates_items.sort(key=lambda x: self.nodes.index(x[0]))
-        buffer_throughput_items = list(result.max_buffer_throughput.items())
-        buffer_throughput_items.sort(key=lambda x: self.nodes.index(x[0][0]))
-        machine_rates_items = list(result.max_machine_rates.items())
-        machine_rates_items.sort(key=lambda x: self.nodes.index(x[0]))
-        trash_rates_items = list(result.max_trash_rates.items())
-        trash_rates_items.sort(key=lambda x: self.nodes.index(x[0]))
-        return FullAnalysisResults(
-            {x: y for x, y in source_rates_items},
-            {x: y for x, y in buffer_throughput_items},
-            {x: y for x, y in machine_rates_items},
-            {x: y for x, y in trash_rates_items},
-            result.single_results
-        )
+    def default_print_info(self, results: FullAnalysisResults):
+        print(results.display())
+        self.print_buffer_throughput(results.max_rates)
+        self.print_machines(results.max_rates)
+        for output_point in self._output_points:
+            if output_point in results.single_results:
+                print("")
+                print(f" --- {output_point.material}")
+                print(results.single_results[output_point].display(True, True, True, True))
+
+    def print_machines(self, rates: FactoryRates):
+        print(" -- machines -- ")
+        for machine in self._nodes:
+            if not isinstance(machine, MachineGroup):
+                continue
+            print(machine.machine_type.display_info(rates[machine]))
+
+    def print_buffer_throughput(self, rates: FactoryRates):
+        print(" -- buffer throughput -- ")
+        for buffer in self._nodes:
+            if not isinstance(buffer, Buffer):
+                continue
+            print(buffer.name + ":")
+            for material, rate in rates.get_throughputs(buffer):
+                print(f"- {material}: {rate:.2f}/s")
+
+
+def new_factory() -> SubFactory:
+    return SubFactory(_Factory())

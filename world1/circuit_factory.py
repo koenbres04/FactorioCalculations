@@ -1,65 +1,64 @@
-from facalc.factories import Factory, OutputPoint, Buffer, SingleAnalysisResults, FullAnalysisResults
+from facalc.factories import SubFactory, OutputPoint, Buffer, FullAnalysisResults, new_factory
 from facalc.factorio_machines import Crafter, CRAFTER_RECIPES, Module
 
 
-class CircuitFactory:
+class CircuitFactory(SubFactory):
     def __init__(
             self,
-            factory: Factory, iron_plate_line: Buffer, copper_plate_line: Buffer, chemical_line: Buffer,
+            parent: SubFactory, iron_plate_line: Buffer, copper_plate_line: Buffer, chemical_line: Buffer,
             crafter_level,
             crafter_modules: tuple[Module, ...] = (),
             output_caps: dict[str, float] | None = None
     ):
-        self.output_line = factory.add_buffer("circuit factory output", output_caps)
-        circuit_line = factory.add_buffer("circuit factory line")
+        super().__init__(parent)
+        self.output_line = self.add_buffer("circuit factory output", output_caps)
+        circuit_line = self.add_buffer("circuit factory line")
 
         # add circuit crafters
-        self.circuit_wire_crafters = factory.add_machine_group(
+        self.circuit_wire_crafters = self.add_machine_group(
             Crafter(CRAFTER_RECIPES["copper_wire"], crafter_level, crafter_modules))
-        factory.connect(copper_plate_line, self.circuit_wire_crafters, "copper_plate")
-        self.circuit_crafters = factory.add_machine_group(
+        self.connect(copper_plate_line, self.circuit_wire_crafters, "copper_plate")
+        self.circuit_crafters = self.add_machine_group(
             Crafter(CRAFTER_RECIPES["circuit"], crafter_level, crafter_modules))
-        factory.connect(self.circuit_wire_crafters, self.circuit_crafters, "copper_wire")
-        factory.connect(iron_plate_line, self.circuit_crafters, "iron_plate")
-        factory.connect(self.circuit_crafters, circuit_line, "circuit")
+        self.connect(self.circuit_wire_crafters, self.circuit_crafters, "copper_wire")
+        self.connect(iron_plate_line, self.circuit_crafters, "iron_plate")
+        self.connect(self.circuit_crafters, circuit_line, "circuit")
 
         # add red circuit crafters
-        self.red_circuit_crafters = factory.add_machine_group(
+        self.red_circuit_crafters = self.add_machine_group(
             Crafter(CRAFTER_RECIPES["red_circuit"], crafter_level, crafter_modules)
         )
-        self.red_circuit_wire_crafters = factory.add_machine_group(
+        self.red_circuit_wire_crafters = self.add_machine_group(
             Crafter(CRAFTER_RECIPES["copper_wire"], crafter_level, crafter_modules))
-        factory.connect(copper_plate_line, self.red_circuit_wire_crafters, "copper_plate")
-        factory.connect(self.red_circuit_wire_crafters, self.red_circuit_crafters, "copper_wire")
-        factory.connect(circuit_line, self.red_circuit_crafters, "circuit")
-        factory.connect(chemical_line, self.red_circuit_crafters, "plastic")
-        factory.connect(self.red_circuit_crafters, circuit_line, "red_circuit")
+        self.connect(copper_plate_line, self.red_circuit_wire_crafters, "copper_plate")
+        self.connect(self.red_circuit_wire_crafters, self.red_circuit_crafters, "copper_wire")
+        self.connect(circuit_line, self.red_circuit_crafters, "circuit")
+        self.connect(chemical_line, self.red_circuit_crafters, "plastic")
+        self.connect(self.red_circuit_crafters, circuit_line, "red_circuit")
 
         # add blue circuit crafters
-        self.blue_circuit_crafters = factory.add_machine_group(
+        self.blue_circuit_crafters = self.add_machine_group(
             Crafter(CRAFTER_RECIPES["blue_circuit"], crafter_level, crafter_modules)
         )
-        factory.connect(chemical_line, self.blue_circuit_crafters, "sulfuric_acid")
-        factory.connect(circuit_line, self.blue_circuit_crafters, "circuit")
-        factory.connect(circuit_line, self.blue_circuit_crafters, "red_circuit")
-        factory.connect(self.blue_circuit_crafters, self.output_line, "blue_circuit")
+        self.connect(chemical_line, self.blue_circuit_crafters, "sulfuric_acid")
+        self.connect(circuit_line, self.blue_circuit_crafters, "circuit")
+        self.connect(circuit_line, self.blue_circuit_crafters, "red_circuit")
+        self.connect(self.blue_circuit_crafters, self.output_line, "blue_circuit")
 
         # output other circuits
-        factory.connect(circuit_line, self.output_line, "circuit")
-        factory.connect(circuit_line, self.output_line, "red_circuit")
+        self.connect(circuit_line, self.output_line, "circuit")
+        self.connect(circuit_line, self.output_line, "red_circuit")
 
-    def print_info(self, results: SingleAnalysisResults | FullAnalysisResults):
-        if isinstance(results, FullAnalysisResults):
-            machine_rates = results.max_machine_rates
-        else:
-            machine_rates = results.machine_rates
-        print("-------- circuit factory info")
-        print(f"wire rate for circuit crafters: {machine_rates[self.circuit_wire_crafters] * self.circuit_wire_crafters.machine_type.output_rates['copper_wire']:.2f}")
-        print(f"iron_plate rate for circuit crafters: {machine_rates[self.circuit_crafters] * self.circuit_crafters.machine_type.input_rates['iron_plate']:.2f}")
-        print(f"circuit rate for red circuit crafters: {machine_rates[self.red_circuit_crafters] * self.red_circuit_crafters.machine_type.input_rates['circuit']:.2f}")
-        print(f"plastic rate for red circuit crafters: {machine_rates[self.red_circuit_crafters] * self.red_circuit_crafters.machine_type.input_rates['plastic']:.2f}")
-        print(f"wire rate for red circuit crafters: {machine_rates[self.red_circuit_wire_crafters] * self.red_circuit_wire_crafters.machine_type.output_rates['copper_wire']:.2f}")
-        print(f"circuit rate for blue_circuit crafters: {machine_rates[self.blue_circuit_crafters] * self.blue_circuit_crafters.machine_type.input_rates['circuit']:.2f}")
+    def print_info(self, results: FullAnalysisResults):
+        rates = results.max_rates
+        print(f"wire rate for circuit crafters: {self.circuit_wire_crafters.output_rate(rates, 'copper_wire'):.2f}")
+        print(f"iron_plate rate for circuit crafters: {self.circuit_crafters.input_rate(rates, 'iron_plate'):.2f}")
+        print(f"circuit rate for red circuit crafters: {self.red_circuit_crafters.input_rate(rates, 'circuit'):.2f}")
+        print(f"plastic rate for red circuit crafters: {self.red_circuit_crafters.input_rate(rates, 'plastic'):.2f}")
+        print(f"wire rate for red circuit crafters: {self.red_circuit_wire_crafters.output_rate(rates, 'copper_wire'):.2f}")
+        print(f"circuit rate for blue circuit crafters: {self.blue_circuit_crafters.input_rate(rates, 'circuit'):.2f}")
+        self.print_machines(rates)
+        self.print_buffer_throughput(rates)
 
 
 def main():
@@ -74,7 +73,7 @@ def main():
     plastic_rate = 15
 
     # crate test factory
-    factory = Factory()
+    factory = new_factory()
     iron_plate_source = factory.add_source("iron_plate", iron_plate_rate)
     iron_line = factory.add_buffer("test iron plate line")
     factory.connect(iron_plate_source, iron_line, "iron_plate")
@@ -100,7 +99,7 @@ def main():
     factory.add_output_point(OutputPoint(circuit_factory.output_line, "red_circuit"))
     factory.add_output_point(OutputPoint(circuit_factory.output_line, "blue_circuit"))
 
-    output = factory.full_analyse()
+    output = factory.analyse()
     print(output.display_full())
     print("")
     circuit_factory.print_info(output)
